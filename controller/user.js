@@ -112,11 +112,38 @@ export const getUserById = async (req, res) => {
 
 }
 
+// UPDATE USER
+export const updateUser = async (req, res) => {
+  let userId = req.params.id
+  const {name, email, phoneNumber, password, country, state} = req.body
+  try {
+    let user = await cohortFourSchema.findById(userId)
+    if(!user) return res.status(404).json({message:"user not Found"})
 
-
+    //Update Only Provided Fields
+  user.name = name || user.name
+  user.email = email || user.email
+  user.phoneNumber = phoneNumber || user.phoneNumber
+  user.password = password || user.password
+  user.country = country || user.country
+  user.state = country || user.state
+  await user.save()
+  res.status(200).json({
+    message:"User Succefully Updated",
+    user:{
+      email:user.email,
+       phoneNumber:user.phoneNumber,
+        country:user.country,
+         state:user.state
+    }
+  })
+} catch (error) {
+  res.status(500).json({message:error.message})
+}
+}
 
 // DELETE USER 
-export const deleteUser = async (req, res)=> {
+ export const deleteUser = async (req, res) =>{
   const userId = req.params.id
   try {
     const user = await cohortFourSchema.findById(userId)
