@@ -1,7 +1,7 @@
 import cohortFourSchema from "../model/user.js"
-import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { trusted } from "mongoose";
+
 
 
 
@@ -15,10 +15,18 @@ export const createStudent = async (req, res) => {
         // check if email exist 
         const exist = await cohortFourSchema.findOne({ email })
         if (exist)
-            return res.status(400).json ({
-        message: "email already exist"
-    })
-      
+            return res.status(400).json 
+          ({message: "email already exist"})
+         
+          // Check if username exist
+    const existUserName = await cohortFourSchema.findOne({userName})
+    if (existUserName) return res.status(400).json
+    ({message:"User Name Already Exist"})
+
+      //Check If phoneNumber Exist
+    const existPhoneNumber = await cohortFourSchema.findOne({phoneNumber})
+    if (existPhoneNumber) res.status(400).json
+    ({message:"Phonenumber Already Exist"})
     // HASH PASSWORD
 
    
@@ -38,8 +46,7 @@ export const createStudent = async (req, res) => {
             userName
         })
         return res.status(201).json({
-            message: "Registration Successful", 
-            student, 
+            message: "Registration Successful", student  
         })
     } catch (error) {
         console.error(error)
@@ -50,9 +57,9 @@ export const createStudent = async (req, res) => {
     // Get All Users
     export const getAllStudents  = async(req, res) => {
         try {
-            let students = await cohortFourSchema.find().select
+            let student = await cohortFourSchema.find().select
             ('-password')
-            res.status(200).json(students)
+            res.status(200).json(student)
         } catch (error) {
             res.status(500).json({message: "server Error", 
                 error})
@@ -94,23 +101,29 @@ export const loginUser = async (req, res) => {
         phoneNumber: user.phoneNumber,
       },
     });
-  } catch (error) {
+  } catch (error) { 
     res.status(500).json({ message: error.message });
   }
 };
 
 // USERS BY ID
 export const getUserById = async (req, res) => {
-    const userId = req.params.id
-    try {
-        const user = await cohortFourSchema.findById(userId).select
-      
-        if(!user)return res.status(404).json({message:"user not found"})
-    } catch (error) {
-      res.status(500)({message:error.message})
+  const userId = req.params.id;
+
+  try {
+    const user = await cohortFourSchema.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-}
+    return res.status(200).json(user);
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 
 // UPDATE USER
 export const updateUser = async (req, res) => {
