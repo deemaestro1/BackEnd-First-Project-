@@ -2,15 +2,22 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import userRouter from "./route/user.js";
+import productRouter from "./route/product.js";
+
+//import { product } from "./model/product.js";
 
 
 const app = express()
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
   
 dotenv.config();
 
 // Routes
 app.use("/api/users", userRouter);
+app.use("/api/product", productRouter);
+
 
 app.listen(3000, () => {
 console.log(`backend is running in port${process.env.PORT}`)
